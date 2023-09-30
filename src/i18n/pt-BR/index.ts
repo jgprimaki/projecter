@@ -15,7 +15,7 @@ export default {
       },
       rules: {
         invalidEmail: 'Email inválido',
-        passwordMinimumSize: 'É necessário no mínimo {0} caracteres',
+        passwordMinimumSize: 'É necessário no mínimo {amount} caracteres',
       },
       descriptions: {
         signIn: 'Ou acesse usando:',
@@ -35,7 +35,7 @@ export default {
       },
       rules: {
         invalidEmail: 'Email inválido',
-        passwordMinimumSize: 'É necessário no mínimo {0} caracteres',
+        passwordMinimumSize: 'É necessário no mínimo {amount} caracteres',
       },
       descriptions: {
         signIn: 'Ou cadastre-se usando:',

@@ -19,7 +19,10 @@
       dense
       :rules="[
         (val) =>
-          val.length >= 6 || $t('auth.register.rules.passwordMinimumSize', [6]),
+          val.length >= passwordMinimumSize ||
+          $t('auth.register.rules.passwordMinimumSize', {
+            amount: passwordMinimumSize,
+          }),
       ]"
       type="password"
     />
