@@ -80,11 +80,11 @@ const deleteTask = () => {
   );
 };
 
-const assignee = computed(() =>
-  t(`taskCard.${props.task.assignee ? 'assignee' : 'emptyAssignee'}`, [
-    props.task.assignee,
-  ])
-);
+const assignee = computed(() => {
+  if (props.task?.assignee) return props.task.assignee;
+
+  return t('taskCard.emptyAssignee');
+});
 
 const assigneeColor = computed(() => (props.task.assignee ? 'primary' : ''));
 </script>

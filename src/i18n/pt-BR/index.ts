@@ -15,7 +15,7 @@ export default {
       },
       rules: {
         invalidEmail: 'Email inválido',
-        passwordMinimumSize: 'É necessário no mínimo {amount} caracteres',
+        passwordMinimumSize: 'É necessário no mínimo 6 caracteres',
       },
       descriptions: {
         signIn: 'Ou acesse usando:',
@@ -35,7 +35,7 @@ export default {
       },
       rules: {
         invalidEmail: 'Email inválido',
-        passwordMinimumSize: 'É necessário no mínimo {amount} caracteres',
+        passwordMinimumSize: 'É necessário no mínimo 6 caracteres',
       },
       descriptions: {
         signIn: 'Ou cadastre-se usando:',
@@ -48,7 +48,7 @@ export default {
       newTask: 'Nova tarefa',
     },
     messages: {
-      newTaskLimited: 'A quantidade máxima de tarefas por coluna é {0}.',
+      newTaskLimited: 'A quantidade máxima de tarefas por coluna é 5.',
     },
   },
   boardColumnList: {

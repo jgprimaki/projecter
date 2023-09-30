@@ -20,7 +20,7 @@
       :rules="[
         (val) =>
           val.length >= passwordMinimumSize ||
-          $t('auth.login.rules.passwordMinimumSize', [passwordMinimumSize]),
+          $t('auth.login.rules.passwordMinimumSize'),
       ]"
       type="password"
     />
