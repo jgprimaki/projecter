@@ -63,7 +63,7 @@ const provider = new GoogleAuthProvider();
 const router = useRouter();
 const $q = useQuasar();
 const { t } = useI18n();
-const passwordMinimumSize = 5;
+const passwordMinimumSize = 6;
 
 const login = async () => {
   loading.value = true;
