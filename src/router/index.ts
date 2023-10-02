@@ -38,10 +38,13 @@ export default route(function () {
   });
 
   Router.beforeEach(async (to, from, next) => {
-    if (to.matched.some((record) => record.meta.requiresAuth)) {
-      if (await getCurrentUser()) next();
-      else next('/auth');
-    } else next();
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    const isAuthenticated = await getCurrentUser();
+    const isToAuthRoute = to.path.includes('auth');
+
+    if (requiresAuth && !isAuthenticated) next('/auth');
+    else if (isToAuthRoute && isAuthenticated) next('/');
+    else next();
   });
 
   return Router;

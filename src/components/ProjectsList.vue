@@ -22,12 +22,7 @@
           </template>
         </q-input>
 
-        <q-btn
-          icon="add"
-          color="primary"
-          dense
-          @click="changeModalVisibilty(true)"
-        >
+        <q-btn icon="add" color="primary" dense @click="newProject">
           {{ $t('projectsList.actions.newProject') }}
         </q-btn>
       </section>
@@ -101,11 +96,15 @@ import IProject from 'src/interfaces/Project';
 import ProjectManagerModal from 'src/components/ProjectManagerModal.vue';
 import { useProjectStore } from 'src/stores/projectStore';
 import { useI18n } from 'vue-i18n';
+import { useQuasar } from 'quasar';
 
 const projectStore = useProjectStore();
 const { t } = useI18n();
 
 const router = useRouter();
+const $q = useQuasar();
+
+const PROJECT_MAXIMUM_AMOUNT = 10;
 
 defineProps<{
   projects: IProject[];
@@ -162,8 +161,30 @@ const fillProjectData = (row: IProject) => {
   changeModalVisibilty(true);
 };
 
+const clearProjectData = () => {
+  project.value.id = '';
+  project.value.name = '';
+  project.value.description = '';
+  project.value.responsible = '';
+};
+
 const changeModalVisibilty = (visible: boolean) => {
+  if (!visible) clearProjectData();
+
   projectManagerModalVisibility.value = visible;
+};
+
+const newProject = () => {
+  if (projectStore.projectsAmount >= PROJECT_MAXIMUM_AMOUNT)
+    return $q.notify({
+      type: 'warning',
+      message: t('projectsList.messages.projectsLimit', [
+        PROJECT_MAXIMUM_AMOUNT,
+      ]),
+      position: 'top',
+    });
+
+  changeModalVisibilty(true);
 };
 
 const openColumsPage = (_: unknown, row: any) =>

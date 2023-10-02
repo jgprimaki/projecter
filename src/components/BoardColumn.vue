@@ -40,6 +40,7 @@
       @blur="saveField"
       @keyup.enter="$event.target.blur()"
       autofocus
+      :maxlength="25"
     />
 
     <section :class="$style['board__projects']">
@@ -72,11 +73,8 @@ import { ref, computed } from 'vue';
 import TaskCard from 'src/components/TaskCard.vue';
 import IBoardColumn from 'src/interfaces/BoardColumn';
 import { useI18n } from 'vue-i18n';
-import { updateDoc, doc } from 'firebase/firestore';
-import { db } from 'src/boot/firebase';
-import { useUserStore } from 'src/stores/userStore';
 import { useProjectStore } from 'src/stores/projectStore';
-import { useRoute } from 'vue-router';
+import { useColumnStore } from 'src/stores/columnStore';
 import { useQuasar } from 'quasar';
 import TaskManagerModal from 'src/components/TaskManagerModal.vue';
 
@@ -86,12 +84,11 @@ const props = defineProps<{
 
 const isEditing = ref(false);
 const editingValue = ref('');
-const tasksMaximumAmount = 5;
+const TASKS_MAXIMUM_AMOUNT = 5;
 const taskManagerModalVisibility = ref(false);
-const userStore = useUserStore();
 const projectStore = useProjectStore();
+const columnStore = useColumnStore();
 const $q = useQuasar();
-const route = useRoute();
 const { t } = useI18n();
 
 const changeModalVisibilty = (visible: boolean) => {
@@ -105,35 +102,26 @@ const editField = (edit: boolean) => {
 };
 
 const saveField = () => {
-  if (editingValue.value && editingValue.value !== props.boardColumn.title) {
-    updateDoc(
-      doc(
-        db,
-        `${userStore.currentUser}`,
-        `${route.params.id}`,
-        'columns',
-        `${props.boardColumn.id}`
-      ),
-      { title: editingValue.value }
-    );
-  }
+  if (editingValue.value && editingValue.value !== props.boardColumn.title)
+    columnStore.updateColumn(props.boardColumn.id, {
+      title: editingValue.value,
+    } as IBoardColumn);
 
   editField(false);
 };
 
 const newTask = () => {
-  if (props.boardColumn.tasks.length >= tasksMaximumAmount)
+  if (props.boardColumn.tasks.length >= TASKS_MAXIMUM_AMOUNT)
     return $q.notify({
       type: 'warning',
-      message: t('boardColumn.messages.newTaskLimited', [tasksMaximumAmount]),
+      message: t('boardColumn.messages.newTaskLimit', [TASKS_MAXIMUM_AMOUNT]),
       position: 'top',
     });
 
   changeModalVisibilty(true);
 };
 
-const deleteColumn = () =>
-  projectStore.deleteColumn(route.params.id as string, props.boardColumn.id);
+const deleteColumn = () => columnStore.deleteColumn(props.boardColumn.id);
 
 const showDeleteColumnButton = computed(() => {
   return (projectStore.currentProjectColumnsAmount ?? 0) > 1;
@@ -156,7 +144,7 @@ const showDeleteColumnButton = computed(() => {
     @apply uppercase font-bold p-2;
 
     &__content {
-      @apply px-1 rounded-lg w-full cursor-pointer;
+      @apply px-1 rounded-lg w-full cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap;
     }
 
     &__content:hover {
@@ -177,4 +165,3 @@ const showDeleteColumnButton = computed(() => {
   }
 }
 </style>
-src/stores/userStore

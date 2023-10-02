@@ -51,14 +51,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import ITask from 'src/interfaces/Task';
-import { useProjectStore } from 'src/stores/projectStore';
 import { useTaskStore } from 'src/stores/taskStore';
 import TaskManagerModal from 'src/components/TaskManagerModal.vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{ task: ITask; columnId: string }>();
 
-const projectStore = useProjectStore();
 const taskStore = useTaskStore();
 const { t } = useI18n();
 
@@ -73,11 +71,7 @@ const updateTask = () => {
 };
 
 const deleteTask = () => {
-  taskStore.deleteTask(
-    projectStore.currentProjectId ?? '',
-    props.columnId,
-    props.task.id ?? ''
-  );
+  taskStore.deleteTask(props.columnId, props.task.id ?? '');
 };
 
 const assignee = computed(() => {

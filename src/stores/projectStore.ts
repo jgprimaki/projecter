@@ -3,7 +3,7 @@ import IProject from 'src/interfaces/Project';
 import IBoardColumn from 'src/interfaces/BoardColumn';
 import ITask from 'src/interfaces/Task';
 
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import {
   collection,
   onSnapshot,
@@ -18,18 +18,19 @@ import {
 } from 'firebase/firestore';
 import { db } from 'src/boot/firebase';
 import { useUserStore } from 'src/stores/userStore';
-import { useRoute } from 'vue-router';
 
 export const useProjectStore = defineStore('project', () => {
   const userStore = useUserStore();
 
   const projects = ref<IProject[]>([]);
+  const currentProjectId = ref('');
+  let unsubscribers: Unsubscribe[] = [];
 
-  const currentProject = computed(() =>
-    projects.value.find((project) => project.id === useRoute().params?.id)
-  );
-
-  const currentProjectId = computed(() => currentProject.value?.id);
+  const currentProject = computed(() => {
+    return projects.value.find(
+      (project) => project.id === currentProjectId.value
+    );
+  });
 
   const currentProjectColumns = computed(() => currentProject.value?.columns);
 
@@ -37,14 +38,17 @@ export const useProjectStore = defineStore('project', () => {
     () => currentProject.value?.columns?.length
   );
 
-  let projectSubscriber: Unsubscribe;
+  const projectsAmount = computed(() => projects.value?.length);
+
+  const setCurrentProjectId = (projectId: string) =>
+    (currentProjectId.value = projectId);
 
   const subscribeToTasks = (
     userEmail: string,
     projectId: string,
     columnId: string
   ) => {
-    onSnapshot(
+    const unsubscriber = onSnapshot(
       query(
         collection(db, `${userEmail}/${projectId}/columns/${columnId}/tasks`),
         orderBy('createdAt')
@@ -71,10 +75,12 @@ export const useProjectStore = defineStore('project', () => {
         }
       }
     );
+
+    unsubscribers.push(unsubscriber);
   };
 
   const subscribeToColumns = (userEmail: string, projectId: string) => {
-    onSnapshot(
+    const unsubscriber = onSnapshot(
       query(
         collection(db, `${userEmail}/${projectId}/columns`),
         orderBy('createdAt')
@@ -97,10 +103,14 @@ export const useProjectStore = defineStore('project', () => {
         }
       }
     );
+
+    unsubscribers.push(unsubscriber);
   };
 
   const subscribeToProjects = (userEmail: string) => {
-    projectSubscriber = onSnapshot(
+    unsubscribeAll();
+    projects.value = [];
+    const unsubscriber = onSnapshot(
       query(collection(db, `${userEmail}`), orderBy('createdAt')),
       (projectQuerySnapshot) => {
         projects.value = [];
@@ -112,6 +122,8 @@ export const useProjectStore = defineStore('project', () => {
         });
       }
     );
+
+    unsubscribers.push(unsubscriber);
   };
 
   const addProject = (payload: IProject) => {
@@ -131,25 +143,23 @@ export const useProjectStore = defineStore('project', () => {
     deleteDoc(doc(db, `${userStore.currentUser}/${id}`));
   };
 
-  const deleteColumn = (projectId: string, columnId: string) => {
-    deleteDoc(
-      doc(db, `${userStore.currentUser}/${projectId}/columns/${columnId}`)
-    );
-  };
+  const unsubscribeAll = () => {
+    if (unsubscribers?.length)
+      unsubscribers.forEach((unsubscriber) => unsubscriber());
 
-  onMounted(() => {
-    if (projectSubscriber) projectSubscriber();
-  });
+    unsubscribers = [];
+  };
 
   return {
     projects,
     currentProjectId,
     currentProjectColumns,
     currentProjectColumnsAmount,
+    projectsAmount,
     addProject,
     updateProject,
     deleteProject,
-    deleteColumn,
     subscribeToProjects,
+    setCurrentProjectId,
   };
 });

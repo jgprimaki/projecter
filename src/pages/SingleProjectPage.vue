@@ -1,7 +1,7 @@
 <template>
-  <q-page :class="$style.page" padding>
+  <section :class="$style.page">
     <BoardColumnList />
-  </q-page>
+  </section>
 </template>
 
 <script setup>
@@ -10,6 +10,6 @@ import BoardColumnList from 'src/components/BoardColumnList.vue';
 
 <style lang="scss" module>
 .page {
-  @apply flex justify-center;
+  @apply p-4;
 }
 </style>

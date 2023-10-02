@@ -38,12 +38,10 @@
 
 <script setup lang="ts">
 import { computed, defineEmits, reactive, watch } from 'vue';
-import { useProjectStore } from 'src/stores/projectStore';
 import { useTaskStore } from 'src/stores/taskStore';
 import ITask from 'src/interfaces/Task';
 import { useI18n } from 'vue-i18n';
 
-const projectStore = useProjectStore();
 const taskStore = useTaskStore();
 const { t } = useI18n();
 
@@ -68,16 +66,11 @@ const clearForm = () => {
 };
 
 const addTask = () => {
-  taskStore.addTask(projectStore.currentProjectId ?? '', props.columnId, form);
+  taskStore.addTask(props.columnId, form);
 };
 
 const updateTask = () => {
-  taskStore.updateTask(
-    projectStore.currentProjectId ?? '',
-    props.columnId,
-    props.task?.id ?? '',
-    form
-  );
+  taskStore.updateTask(props.columnId, props.task?.id ?? '', form);
 };
 
 const executeAction = () => {

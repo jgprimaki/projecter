@@ -48,7 +48,7 @@ export default {
       newTask: 'Nova tarefa',
     },
     messages: {
-      newTaskLimited: 'A quantidade máxima de tarefas por coluna é 5.',
+      newTaskLimit: 'A quantidade máxima de tarefas por coluna é 5.',
     },
   },
   boardColumnList: {
@@ -91,6 +91,9 @@ export default {
       redirectToProject: 'Acessar projeto',
       deleteProject: 'Excluir projeto',
     },
+    messages: {
+      projectsLimit: 'A quantidade máxima de projetos é 10.',
+    },
   },
   taskCard: {
     assignee: 'Tarefa atribuída para: {0}',
@@ -113,5 +116,7 @@ export default {
   },
   general: {
     close: 'Fechar',
+    return: 'Voltar',
+    disconnect: 'Desconectar',
   },
 };
